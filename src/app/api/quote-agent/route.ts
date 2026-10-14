@@ -7,14 +7,18 @@ import {
   type AgentErrorCode,
   type AgentResponse,
 } from "@/features/quote-agent/schema";
-import { AgentNotConfiguredError, runQuoteAgent } from "@/features/quote-agent/server/gemini";
+import {
+  AgentNotConfiguredError,
+  AgentUpstreamError,
+  runQuoteAgent,
+} from "@/features/quote-agent/server/gemini";
 
 const MAX_BODY_BYTES = 32 * 1024;
 
 let limiter: ReturnType<typeof createRateLimiter> | undefined;
 
-function error(code: AgentErrorCode, status: number, headers?: HeadersInit) {
-  return NextResponse.json({ error: code }, { status, headers });
+function error(code: AgentErrorCode, status: number, headers?: HeadersInit, reason?: string) {
+  return NextResponse.json(reason ? { error: code, reason } : { error: code }, { status, headers });
 }
 
 function clientIp(req: NextRequest): string {
@@ -67,7 +71,11 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     if (err instanceof AgentNotConfiguredError) return error("not_configured", 503);
     // Solo se registra el tipo de error: nunca el contenido del usuario.
-    console.error("[quote-agent] upstream error:", err instanceof Error ? err.message : "unknown");
-    return error("upstream_error", 502);
+    const reason = err instanceof AgentUpstreamError ? err.reason : "unknown";
+    console.error(
+      `[quote-agent] upstream error (${reason}):`,
+      err instanceof Error ? err.message : "unknown",
+    );
+    return error("upstream_error", 502, undefined, reason);
   }
 }
