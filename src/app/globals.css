@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+/*
+ * Tokens de diseño.
+ * Toda la paleta vive aquí: ajustar el tono de las secciones oscuras
+ * (pendiente de afinar) es cambiar solo estas variables.
+ */
+@theme {
+  /* Superficies claras */
+  --color-canvas: #f1f2ef;
+  --color-paper: #ffffff;
+  --color-sheet: #e7e9e6;
+  --color-line: #d9ddda;
+  --color-line-soft: #e4e7e5;
+
+  /* Texto sobre claro */
+  --color-ink: #14181b;
+  --color-ink-soft: #3d464c;
+  --color-muted: #5b656d;
+
+  /* Superficies oscuras */
+  --color-night: #101417;
+  --color-night-raised: #182024;
+  --color-night-deep: #0b0e10;
+  --color-night-line: #2a3136;
+  --color-night-text: #f1f2ef;
+  --color-night-muted: #b9c0c4;
+  --color-night-subtle: #9aa3a8;
+
+  /* Pie de página */
+  --color-graphite: #1b2125;
+  --color-graphite-line: #2c343a;
+
+  /* Acento de marca (contraste AA con texto blanco) */
+  --color-accent: #c2410c;
+  --color-accent-hover: #a3360a;
+  --color-accent-soft: #ffb27a;
+  --color-led: #ff6a3d;
+
+  --font-sans: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-barlow-condensed), var(--font-barlow), sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Compensa la barra de navegación fija al saltar a anclas. */
+    scroll-padding-top: 80px;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility blueprint-grid {
+  background-color: var(--color-sheet);
+  background-image:
+    linear-gradient(var(--color-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+@utility outline-numeral {
+  color: transparent;
+  -webkit-text-stroke: 1px #262e33;
+}
+
+@utility led-glow {
+  text-shadow: 0 0 14px rgb(255 90 54 / 0.4);
+}
