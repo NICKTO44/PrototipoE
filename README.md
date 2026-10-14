@@ -18,14 +18,14 @@ Información e imágenes tomadas de [euroheaters.mx › Controladores](https://w
 
 ## Stack y decisiones
 
-| Elección                                 | Por qué                                                                                                                                          |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Next.js 16 (App Router) + TypeScript** | Fichas con URL propia y generadas estáticamente (SEO, rendimiento). Una _Route Handler_ protege la clave de Gemini sin montar un backend aparte. |
-| **Tailwind CSS 4**                       | Tokens de diseño centralizados en `src/app/globals.css` (`@theme`). Ajustar la paleta es cambiar variables, no componentes.                      |
-| **Gemini (`@google/genai`)**             | Salida **estructurada en JSON**, validada con Zod y contrastada con el catálogo: la IA nunca puede inventar productos ni campos.                 |
-| **Flujo guiado de respaldo**             | Si la IA no está configurada o falla, el asistente sigue funcionando con opciones. La conversación siempre termina en una solicitud completa.    |
-| **Zod**                                  | Un solo contrato para cliente, servidor y modelo (`schema.ts`); el esquema JSON que recibe Gemini se genera desde el mismo esquema.              |
-| **Embla Carousel**                       | Ligero, accesible y con gestos táctiles.                                                                                                         |
+| Elección                                       | Por qué                                                                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Next.js 16 (App Router) + TypeScript**       | Fichas con URL propia y generadas estáticamente (SEO, rendimiento). Una _Route Handler_ protege la clave de Gemini sin montar un backend aparte. |
+| **Tailwind CSS 4**                             | Tokens de diseño centralizados en `src/app/globals.css` (`@theme`). Ajustar la paleta es cambiar variables, no componentes.                      |
+| **Claude o Gemini (proveedor intercambiable)** | Salida **estructurada en JSON**, validada con Zod y contrastada con el catálogo: la IA nunca puede inventar productos ni campos.                 |
+| **Flujo guiado de respaldo**                   | Si la IA no está configurada o falla, el asistente sigue funcionando con opciones. La conversación siempre termina en una solicitud completa.    |
+| **Zod**                                        | Un solo contrato para cliente, servidor y modelo (`schema.ts`); el esquema JSON que recibe Gemini se genera desde el mismo esquema.              |
+| **Embla Carousel**                             | Ligero, accesible y con gestos táctiles.                                                                                                         |
 
 ### ¿Por qué no llamar a Gemini directo desde el navegador?
 
@@ -46,7 +46,7 @@ src/
 │   ├── catalog/                # Cabecera, carrusel, grilla, tarjetas
 │   ├── product/                # Ficha: galería, beneficios, specs, configurador
 │   └── quote-agent/            # Asistente: estado, flujo guiado, contrato y servidor
-│       └── server/             # Prompt y cliente de Gemini (server-only)
+│       └── server/             # Prompt y proveedores de IA: Claude y Gemini (server-only)
 ├── components/                 # UI compartida (Button, Container, …) y layout
 ├── config/site.ts              # Datos públicos del sitio (contacto)
 └── lib/                        # Utilidades: env validado, rate limit, cn
@@ -62,11 +62,11 @@ Requisitos: **Node.js 20.9+** (recomendado 22, ver `.nvmrc`).
 
 ```bash
 npm install
-cp .env.example .env.local   # y complete GEMINI_API_KEY (opcional)
+cp .env.example .env.local   # y complete ANTHROPIC_API_KEY o GEMINI_API_KEY (opcional)
 npm run dev                  # http://localhost:3000
 ```
 
-Sin `GEMINI_API_KEY` el sitio funciona completo; el asistente opera en **modo guiado**.
+Sin clave de IA el sitio funciona completo; el asistente opera en **modo guiado**.
 
 ## Variables de entorno
 
@@ -115,7 +115,7 @@ carrusel, contraste AA en botones y respeto de `prefers-reduced-motion` (sin aut
 ## Despliegue (Vercel)
 
 1. Suba el repositorio a GitHub e impórtelo en Vercel.
-2. En _Settings › Environment Variables_ agregue `GEMINI_API_KEY` (y las demás si cambian).
+2. En _Settings › Environment Variables_ agregue `ANTHROPIC_API_KEY` (o `GEMINI_API_KEY`).
    Use claves distintas para **Preview** y **Production**.
 3. Cada push genera una URL de vista previa.
 

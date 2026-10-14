@@ -11,7 +11,7 @@ import {
   AgentNotConfiguredError,
   AgentUpstreamError,
   runQuoteAgent,
-} from "@/features/quote-agent/server/gemini";
+} from "@/features/quote-agent/server/agent";
 
 const MAX_BODY_BYTES = 32 * 1024;
 

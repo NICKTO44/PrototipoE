@@ -19,6 +19,7 @@
     "check": "npm run lint && npm run typecheck && npm run test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.134.0",
     "@google/genai": "2.29.1",
     "clsx": "2.1.1",
     "embla-carousel-autoplay": "8.6.0",
