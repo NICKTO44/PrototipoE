@@ -40,11 +40,12 @@ export type AgentRequest = z.infer<typeof agentRequestSchema>;
  */
 export const agentModelOutputSchema = z.object({
   reply: z.string().min(1).max(1200),
-  productSlug: z.string().nullable(),
-  answers: z.array(z.object({ fieldId: z.string(), value: z.string() })).max(10),
-  contactName: z.string().nullable(),
-  company: z.string().nullable(),
-  email: z.string().nullable(),
+  // Cadena vacía = dato no aportado (más compatible que null en el modo JSON de Gemini).
+  productSlug: z.string(),
+  answers: z.array(z.object({ fieldId: z.string(), value: z.string() })),
+  contactName: z.string(),
+  company: z.string(),
+  email: z.string(),
   handoff: z.boolean(),
 });
 export type AgentModelOutput = z.infer<typeof agentModelOutputSchema>;

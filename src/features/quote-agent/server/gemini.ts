@@ -41,17 +41,33 @@ export async function runQuoteAgent(req: AgentRequest): Promise<AgentModelOutput
         responseMimeType: "application/json",
         responseJsonSchema,
         temperature: 0.3,
-        maxOutputTokens: 600,
+        // Holgado: en los modelos con razonamiento, los tokens de "pensamiento" cuentan aquí.
+        maxOutputTokens: 4096,
         abortSignal: controller.signal,
       },
     });
 
-    const parsed = agentModelOutputSchema.safeParse(JSON.parse(response.text ?? "{}"));
+    const text = (response.text ?? "").trim();
+    if (!text) {
+      throw new AgentUpstreamError(
+        `Respuesta vacía (finishReason: ${response.candidates?.[0]?.finishReason ?? "desconocido"})`,
+      );
+    }
+    let json: unknown;
+    try {
+      // Tolera respuestas envueltas en bloque de código ```json … ```.
+      json = JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, ""));
+    } catch {
+      throw new AgentUpstreamError("JSON inválido en la respuesta del modelo");
+    }
+    const parsed = agentModelOutputSchema.safeParse(json);
     if (!parsed.success) throw new AgentUpstreamError("Respuesta del modelo fuera de esquema");
     return parsed.data;
   } catch (error) {
     if (error instanceof AgentUpstreamError) throw error;
-    throw new AgentUpstreamError(error instanceof Error ? error.name : "UnknownError");
+    // Mensaje técnico del SDK (código/estado de la API). No incluye datos del usuario.
+    const detail = error instanceof Error ? `${error.name}: ${error.message}` : "UnknownError";
+    throw new AgentUpstreamError(detail.slice(0, 300));
   } finally {
     clearTimeout(timer);
   }
